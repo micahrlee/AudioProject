@@ -1,20 +1,22 @@
 package com.micahlee.me;
 
-import java.awt.Desktop;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.regex.Pattern;
 
 import javax.sound.sampled.AudioFileFormat;
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
-import javax.sound.sampled.Clip;
 import javax.sound.sampled.DataLine;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.TargetDataLine;
+import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 
 public class AudioRecorder extends Thread{
@@ -24,10 +26,10 @@ public class AudioRecorder extends Thread{
 	private TargetDataLine dataLine;
 	private byte[] data;
 	private final String path;
-	private final boolean saveFile;
+	private static String file;
 	private boolean stop = true;
 	
-	public AudioRecorder(final String path, final AudioFileFormat.Type type, final boolean saveFile){
+	public AudioRecorder(final String path, final AudioFileFormat.Type type){
 		initDataLine();
 		stop = true;
 		if(type != null){
@@ -37,7 +39,16 @@ public class AudioRecorder extends Thread{
 			this.type = AudioFileFormat.Type.WAVE;
 		}
 		this.path = path;
-		this.saveFile = saveFile;
+		try {
+			FileNameWindow dialog = new FileNameWindow();
+			dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+			dialog.setModal(true);
+			dialog.setVisible(true);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		ifExistsAppend(type);
+		file += "." + type.getExtension();
 	}
 	
 	private void initDataLine(){
@@ -68,53 +79,59 @@ public class AudioRecorder extends Thread{
 			bytesRead = dataLine.read(data, 0, data.length);
 			out.write(data, 0, bytesRead);
 		}
-		if(saveFile){
-			saveFile();
-		}
+		saveFile();
 	}
 	
 	public void stopRecord(){
 		stop = true;
+		dataLine.drain();
 		dataLine.stop();
+		dataLine.flush();
 		dataLine.close();
 	}
 	
 	private void saveFile(){
 		InputStream audioData = new ByteArrayInputStream(data);
 		AudioInputStream ais = new AudioInputStream(audioData, format, (long)data.length);
+		@SuppressWarnings("static-access")
+		File file = new File(path + this.file);
 		try {
-			AudioSystem.write(ais, type, new File(path));
+			AudioSystem.write(ais, type, file);
 		} catch (IOException e1) {
 			e1.printStackTrace();
 		}
-		if(JOptionPane.YES_OPTION == JOptionPane.showConfirmDialog(null, "File saved successfully!\n Open directory?", "Open Directory?", JOptionPane.YES_NO_OPTION)){
-			try {
-				Desktop.getDesktop().open(new File(System.getProperty("user.dir") + File.separator));
-			} catch (IOException e) {
-				e.printStackTrace();
+	}
+	
+	private void ifExistsAppend(AudioFileFormat.Type type){
+		File testFile = new File(path);
+		ArrayList<File> list = new ArrayList<File>(Arrays.asList(testFile.listFiles()));
+		int append = 0;
+		if(!list.contains(file + "." + type.getExtension())){
+			return;
+		}
+		while(contains(list, Pattern.compile(file + append + "\\..*"))){
+			++append;
+		}
+		file += append;
+	}
+	
+	private boolean contains(ArrayList<File> al, Pattern p){
+		for(File f : al){
+			if(p.matcher(f.getName()).matches()){
+				return true;
 			}
 		}
+		return false;
 	}
 	
-	private void playBack(){
-		DataLine.Info info = new DataLine.Info(Clip.class, format);
-		try {
-			Clip clip = (Clip)AudioSystem.getLine(info);
-			clip.open(format, data, 0, data.length);
-			clip.start();
-		} catch (LineUnavailableException e) {
-			e.printStackTrace();
-		}
-	}
-	
-	private void filterOrWhatever(){
-		
+	public static void setFileName(String s){
+		file = s;
 	}
 
 	@Override
 	public void run() {
 		listen();
-		playBack();
-		filterOrWhatever();
+		JOptionPane.showMessageDialog(null, "Recording of " + file +  " has finished!", "Done", JOptionPane.INFORMATION_MESSAGE);
+		AudioRecordingWindow.setFile(new File(path + file));
 	}
 }
