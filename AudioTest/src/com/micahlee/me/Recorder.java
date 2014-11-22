@@ -85,7 +85,6 @@ public class Recorder implements Runnable {
 		try {
 			out.flush();
 			out.close();
-			out = null;
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

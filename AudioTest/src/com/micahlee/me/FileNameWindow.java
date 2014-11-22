@@ -13,6 +13,7 @@ import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
+import javax.swing.JRootPane;
 import javax.swing.JTextField;
 import javax.swing.JLabel;
 import javax.swing.LayoutStyle.ComponentPlacement;
@@ -47,6 +48,7 @@ public class FileNameWindow extends JDialog {
 		JButton ok = new JButton("OK");
 		setLocationRelativeTo(null);
 		setUndecorated(true);
+		getRootPane().setWindowDecorationStyle(JRootPane.PLAIN_DIALOG);
 		GroupLayout gl_contentPanel = new GroupLayout(contentPanel);
 		gl_contentPanel.setHorizontalGroup(
 			gl_contentPanel.createParallelGroup(Alignment.LEADING)

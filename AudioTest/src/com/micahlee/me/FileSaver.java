@@ -12,6 +12,10 @@ public class FileSaver implements Runnable {
 	private AudioFileFormat.Type type;
 	public static String fileName;
 	
+	public FileSaver(){
+		getPath();
+	}
+	
 	public void start(AudioFileFormat.Type type) {
 		thread = new Thread(this);
 		this.type = type;
@@ -28,7 +32,7 @@ public class FileSaver implements Runnable {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		File file = new File(getPath() + appendIfExists(fileName) + "." + type.getExtension().toLowerCase());
+		File file = new File(getPath() + appendIfExists(fileName));
 		createAudio(file);
 		AudioProjectUtils.inform("Recording of " + file.getName() + " has finished.", "Done");
 	}	
@@ -44,15 +48,16 @@ public class FileSaver implements Runnable {
 	}
 	
 	private String appendIfExists(String f){
-		File test = new File(getPath() + f);
-		int append = 0;
+		File test = new File(getPath() + f + "." + type.getExtension().toLowerCase());
 		if(test.exists()){
-			while(test.exists());{
-				test = new File(getPath() + append);
+			int append = 0;
+			while(test.exists()){
+				test = new File(getPath() + fileName + append + "." + type.getExtension().toLowerCase());
 				++append;
 			}
+			return fileName + (append - 1) + "." + type.getExtension().toLowerCase();
 		}
-		return fileName + append;
+		return fileName + "." + type.getExtension().toLowerCase();
 	}
 	
 	private String getPath() {

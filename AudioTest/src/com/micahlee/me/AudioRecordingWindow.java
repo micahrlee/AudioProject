@@ -26,6 +26,8 @@ import javax.swing.JTextField;
 import javax.swing.JMenuBar;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
+import org.eclipse.wb.swing.FocusTraversalOnArray;
+import java.awt.Component;
 
 public class AudioRecordingWindow extends JFrame {
 	private static final long serialVersionUID = 1L;
@@ -38,7 +40,6 @@ public class AudioRecordingWindow extends JFrame {
 	
 	private JPanel contentPane;
 	private JButton startRecord;
-	private JButton stopRecord;
 	private JButton chooseFile;
 	private JButton saveAudio;
 	private JButton splitPhonemes;
@@ -79,7 +80,7 @@ public class AudioRecordingWindow extends JFrame {
 		}
 		setResizable(false);
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-		setBounds(100, 100, 379, 164);
+		setBounds(100, 100, 283, 164);
 		
 		menuBar = new JMenuBar();
 		setJMenuBar(menuBar);
@@ -92,14 +93,12 @@ public class AudioRecordingWindow extends JFrame {
 		
 		mntmAbout = new JMenuItem("About");
 		mnMenu.add(mntmAbout);
+		
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
 		
 		startRecord = new JButton("Record");
-		
-		stopRecord = new JButton("Stop Recording");
-		stopRecord.setEnabled(false);
 		
 		startPlay = new JButton("Play");
 		startPlay.setEnabled(false);
@@ -107,6 +106,7 @@ public class AudioRecordingWindow extends JFrame {
 		chooseFile = new JButton("Choose File");
 		
 		splitPhonemes = new JButton("Split Phonemes");
+		splitPhonemes.setEnabled(false);
 
 		saveAudio = new JButton("Save Audio");
 		saveAudio.setEnabled(false);		
@@ -127,60 +127,50 @@ public class AudioRecordingWindow extends JFrame {
 		
 		GroupLayout gl_contentPane = new GroupLayout(contentPane);
 		gl_contentPane.setHorizontalGroup(
-			gl_contentPane.createParallelGroup(Alignment.TRAILING)
-				.addGroup(gl_contentPane.createSequentialGroup()
-					.addContainerGap()
-					.addComponent(startRecord, GroupLayout.DEFAULT_SIZE, 87, Short.MAX_VALUE)
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(stopRecord, GroupLayout.DEFAULT_SIZE, 105, Short.MAX_VALUE)
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(fileExtension, GroupLayout.DEFAULT_SIZE, 57, Short.MAX_VALUE)
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(saveAudio, GroupLayout.DEFAULT_SIZE, 87, Short.MAX_VALUE)
-					.addGap(4))
-				.addGroup(gl_contentPane.createSequentialGroup()
-					.addGap(54)
-					.addComponent(fileToPlay, GroupLayout.DEFAULT_SIZE, 86, Short.MAX_VALUE)
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(chooseFile, GroupLayout.DEFAULT_SIZE, 87, Short.MAX_VALUE)
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(startPlay, GroupLayout.DEFAULT_SIZE, 80, Short.MAX_VALUE)
-					.addGap(44))
-				.addGroup(gl_contentPane.createSequentialGroup()
-					.addGap(9)
-					.addComponent(splitPhonemes, GroupLayout.DEFAULT_SIZE, 344, Short.MAX_VALUE)
-					.addContainerGap())
-				.addGroup(gl_contentPane.createSequentialGroup()
-					.addGap(5)
-					.addComponent(separator_1, GroupLayout.DEFAULT_SIZE, 354, Short.MAX_VALUE)
-					.addGap(4))
-				.addGroup(gl_contentPane.createSequentialGroup()
-					.addGap(5)
-					.addComponent(separator, GroupLayout.DEFAULT_SIZE, 354, Short.MAX_VALUE)
-					.addGap(4))
-		);
-		gl_contentPane.setVerticalGroup(
 			gl_contentPane.createParallelGroup(Alignment.LEADING)
 				.addGroup(gl_contentPane.createSequentialGroup()
+					.addGap(10)
 					.addGroup(gl_contentPane.createParallelGroup(Alignment.LEADING)
+						.addGroup(gl_contentPane.createSequentialGroup()
+							.addComponent(startRecord, GroupLayout.PREFERRED_SIZE, 84, GroupLayout.PREFERRED_SIZE)
+							.addPreferredGap(ComponentPlacement.RELATED)
+							.addComponent(fileExtension, GroupLayout.PREFERRED_SIZE, 66, GroupLayout.PREFERRED_SIZE)
+							.addPreferredGap(ComponentPlacement.RELATED)
+							.addComponent(saveAudio, GroupLayout.DEFAULT_SIZE, 87, Short.MAX_VALUE))
+						.addGroup(gl_contentPane.createSequentialGroup()
+							.addComponent(fileToPlay, GroupLayout.DEFAULT_SIZE, 98, Short.MAX_VALUE)
+							.addPreferredGap(ComponentPlacement.RELATED)
+							.addComponent(chooseFile, GroupLayout.DEFAULT_SIZE, 87, Short.MAX_VALUE)
+							.addPreferredGap(ComponentPlacement.RELATED)
+							.addComponent(startPlay, GroupLayout.DEFAULT_SIZE, 80, Short.MAX_VALUE))
+						.addComponent(separator_1, GroupLayout.DEFAULT_SIZE, 343, Short.MAX_VALUE)
+						.addComponent(separator, GroupLayout.DEFAULT_SIZE, 343, Short.MAX_VALUE)
+						.addComponent(splitPhonemes, GroupLayout.DEFAULT_SIZE, 343, Short.MAX_VALUE))
+					.addGap(10))
+		);
+		gl_contentPane.setVerticalGroup(
+			gl_contentPane.createParallelGroup(Alignment.TRAILING)
+				.addGroup(gl_contentPane.createSequentialGroup()
+					.addGroup(gl_contentPane.createParallelGroup(Alignment.BASELINE)
+						.addComponent(startRecord, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
 						.addComponent(fileExtension, GroupLayout.DEFAULT_SIZE, 23, Short.MAX_VALUE)
-						.addComponent(saveAudio, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-						.addComponent(stopRecord, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-						.addComponent(startRecord, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+						.addComponent(saveAudio, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addComponent(separator, GroupLayout.PREFERRED_SIZE, 2, GroupLayout.PREFERRED_SIZE)
-					.addGap(11)
+					.addPreferredGap(ComponentPlacement.RELATED)
 					.addGroup(gl_contentPane.createParallelGroup(Alignment.BASELINE)
 						.addComponent(fileToPlay, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-						.addComponent(chooseFile)
+						.addComponent(chooseFile, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
 						.addComponent(startPlay))
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addComponent(separator_1, GroupLayout.PREFERRED_SIZE, 2, GroupLayout.PREFERRED_SIZE)
-					.addPreferredGap(ComponentPlacement.RELATED, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+					.addGap(9)
 					.addComponent(splitPhonemes)
 					.addContainerGap())
 		);
 		contentPane.setLayout(gl_contentPane);
+		contentPane.setFocusTraversalPolicy(new FocusTraversalOnArray(new Component[]{separator, startRecord, fileExtension, saveAudio, fileToPlay, chooseFile, startPlay, splitPhonemes, separator_1}));
+		setFocusTraversalPolicy(new FocusTraversalOnArray(new Component[]{menuBar, mnMenu, mntmJelp, contentPane, mntmAbout, fileToPlay, chooseFile, startPlay, separator, separator_1, splitPhonemes, startRecord, fileExtension, saveAudio}));
 		activateListeners();
 	}
 	
@@ -188,22 +178,19 @@ public class AudioRecordingWindow extends JFrame {
 		startRecord.addActionListener(new ActionListener(){
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				recorder.start();
-				startRecord.setEnabled(false);
-				stopRecord.setEnabled(true);
-			}
-		});
-		
-		stopRecord.addActionListener(new ActionListener(){
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
-				recorder.stop();
-				startRecord.setEnabled(true);
-				stopRecord.setEnabled(false);
-				startPlay.setEnabled(true);
-				saveAudio.setEnabled(true);
-				fileExtension.setEnabled(true);
-				fileToPlay.setText("Recorded Audio");
+				if(startRecord.getText().startsWith("Record")){
+					recorder.start();
+					startRecord.setText("Stop");
+				}
+				else if(startRecord.getText().startsWith("Stop")){
+					recorder.stop();
+					startRecord.setText("Record");
+					startPlay.setEnabled(true);
+					saveAudio.setEnabled(true);
+					fileExtension.setEnabled(true);
+					splitPhonemes.setEnabled(true);
+					fileToPlay.setText("Recorded Audio");
+				}
 			}
 		});
 		
@@ -265,7 +252,6 @@ public class AudioRecordingWindow extends JFrame {
 		});
 	}
 	
-	//Play methods
 	private void showFileChooser(){
 		JFileChooser chooser = new JFileChooser(System.getProperty("user.dir") + File.separator + "Audio" + File.separator);
 		chooser.setFileFilter(new AudioFilter());
@@ -275,6 +261,7 @@ public class AudioRecordingWindow extends JFrame {
 			file = chooser.getSelectedFile();
 			fileToPlay.setText(file.getName());
 			startPlay.setEnabled(true);
+			splitPhonemes.setEnabled(true);
 			saveAudio.setEnabled(false);
 		}
 		else{
@@ -286,7 +273,6 @@ public class AudioRecordingWindow extends JFrame {
 		}
 	}
 	
-	//Main
 	public static void main(String[] args){
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
@@ -300,7 +286,6 @@ public class AudioRecordingWindow extends JFrame {
 		});
 	}
 	
-	//Private class for filtering extensions
 	private class AudioFilter extends FileFilter{
 		@Override
 		public boolean accept(File f) {
