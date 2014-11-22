@@ -76,7 +76,7 @@ public class FileNameWindow extends JDialog {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				if(!fileName.getText().trim().equals("")){
-					AudioRecorder.setFileName(fileName.getText());
+					FileSaver.fileName = fileName.getText().trim();
 					dispose();
 				}
 			}
@@ -86,7 +86,7 @@ public class FileNameWindow extends JDialog {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				if(!fileName.getText().trim().equals("")){
-					AudioRecorder.setFileName(fileName.getText());
+					FileSaver.fileName = fileName.getText().trim();
 					dispose();
 				}
 			}
