@@ -2,9 +2,11 @@ package com.micahlee.me;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.PrintWriter;
 
 import javax.sound.sampled.AudioFileFormat;
 import javax.sound.sampled.AudioSystem;
+
 import javax.swing.JDialog;
 
 public class FileSaver implements Runnable {
@@ -32,8 +34,10 @@ public class FileSaver implements Runnable {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		File file = new File(getPath() + appendIfExists(fileName));
+		fileName = appendIfExists(fileName, "." + type.getExtension().toLowerCase());
+		File file = new File(getPath() + fileName + "." + type.getExtension().toLowerCase());
 		createAudio(file);
+		writeBytes();
 		AudioProjectUtils.inform("Recording of " + file.getName() + " has finished.", "Done");
 	}	
 	
@@ -42,22 +46,37 @@ public class FileSaver implements Runnable {
 			AudioRecordingWindow.audioInputStream.reset();
 			AudioSystem.write(AudioRecordingWindow.audioInputStream, type, f);
 		} catch (IOException e) {
-			AudioProjectUtils.error("Error writing file", thread);
+			AudioProjectUtils.error("Error writing audio file", thread);
 			return;
 		}
 	}
 	
-	private String appendIfExists(String f){
-		File test = new File(getPath() + f + "." + type.getExtension().toLowerCase());
+	private void writeBytes(){
+		try {
+			PrintWriter writer = new PrintWriter(getPath() + fileName + ".txt", "UTF-8");
+			writer.println("Index\tValue");
+			for(int i = 0; i < AudioRecordingWindow.data.length; i++){
+				writer.println(i + "\t" + AudioRecordingWindow.data[i]);
+			}
+			
+			writer.close();
+		} catch (IOException e) {
+			AudioProjectUtils.error("Error writing byte file", thread);
+			return;
+		}
+	}
+	
+	private String appendIfExists(String f, String ext){
+		File test = new File(getPath() + f + ext);
 		if(test.exists()){
 			int append = 0;
 			while(test.exists()){
-				test = new File(getPath() + fileName + append + "." + type.getExtension().toLowerCase());
+				test = new File(getPath() + f + append + ext);
 				++append;
 			}
-			return fileName + (append - 1) + "." + type.getExtension().toLowerCase();
+			return f + (append - 1);
 		}
-		return fileName + "." + type.getExtension().toLowerCase();
+		return f;
 	}
 	
 	private String getPath() {

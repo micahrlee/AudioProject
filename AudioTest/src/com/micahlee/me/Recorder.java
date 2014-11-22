@@ -3,7 +3,6 @@ package com.micahlee.me;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.util.Arrays;
 
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
@@ -54,20 +53,19 @@ public class Recorder implements Runnable {
 		out = new ByteArrayOutputStream();
 		int frameSize = format.getFrameSize();
 		int bufLength = (line.getBufferSize() / 8) * frameSize;
-		byte[] data = new byte[bufLength];
+		AudioRecordingWindow.data = new byte[bufLength];
 		int bytesRead;
 		
 		line.start();
 		
 		while(thread != null){
-			if((bytesRead = line.read(data, 0, bufLength)) == -1){
+			if((bytesRead = line.read(AudioRecordingWindow.data, 0, bufLength)) == -1){
 				break;
 			}
-			out.write(data, 0, bytesRead);
+			out.write(AudioRecordingWindow.data, 0, bytesRead);
 		}
 		clearLine();
 		clearBuffer();
-		System.out.println(Arrays.toString(data));
 	}
 	
 	private void writeToStream(){

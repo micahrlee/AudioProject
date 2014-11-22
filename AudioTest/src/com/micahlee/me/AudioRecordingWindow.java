@@ -33,6 +33,7 @@ public class AudioRecordingWindow extends JFrame {
 	private static final long serialVersionUID = 1L;
 	
 	public static AudioInputStream audioInputStream;
+	public static byte[] data;
 	private File file;
 	private Recorder recorder;
 	private Playback playback;
@@ -257,7 +258,7 @@ public class AudioRecordingWindow extends JFrame {
 		chooser.setFileFilter(new AudioFilter());
 		chooser.setAcceptAllFileFilterUsed(false);
 		chooser.setDialogTitle("Choose your audio file");
-		if(chooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION){	
+		if(chooser.showDialog(this, "Select") == JFileChooser.APPROVE_OPTION){	
 			file = chooser.getSelectedFile();
 			fileToPlay.setText(file.getName());
 			startPlay.setEnabled(true);
