@@ -14,7 +14,6 @@ import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.SourceDataLine;
 import javax.sound.sampled.UnsupportedAudioFileException;
 
-
 public class Playback implements Runnable {
 	public static final AudioFormat.Encoding encoding = AudioFormat.Encoding.PCM_SIGNED;
 	public static final float rate = 44100.0f;

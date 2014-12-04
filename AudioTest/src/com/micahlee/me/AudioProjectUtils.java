@@ -18,4 +18,17 @@ public class AudioProjectUtils {
 			thread = null;
 		}
 	}
+	
+	public static byte[] applyFFT(byte[] signal){
+		int bigN = signal.length - 1;
+		byte[] retVal = new byte[signal.length];
+		
+		for(int k = 0; k < signal.length; k++){
+			for(int n = 0; n < signal.length; n++){
+				
+			}
+		}
+		
+		return retVal;
+	}
 }

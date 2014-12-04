@@ -34,7 +34,7 @@ public class AudioRecordingWindow extends JFrame {
 	
 	public static AudioInputStream audioInputStream;
 	public static byte[] data;
-	private File file;
+	private static File file;
 	private Recorder recorder;
 	private Playback playback;
 	private FileSaver fs;
@@ -272,6 +272,10 @@ public class AudioRecordingWindow extends JFrame {
 				startPlay.setEnabled(false);
 			}
 		}
+	}
+	
+	public static void setFile(File f){
+		file = f;
 	}
 	
 	public static void main(String[] args){

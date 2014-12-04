@@ -100,6 +100,7 @@ public class Recorder implements Runnable {
 			record();
 			writeToStream();
 		}
+		AudioRecordingWindow.setFile(null);
 		AudioProjectUtils.error(null, thread);
 	}
 
