@@ -7,22 +7,48 @@ import java.awt.Graphics;
 import java.util.LinkedList;
 
 import javax.swing.JComponent;
+import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 import java.awt.Point;
+import java.awt.geom.Point2D;
 import java.util.Arrays;
+
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 /**
  *
  * @author Adam
  */
-public class DiscretePlotter extends JComponent 
+public class DiscretePlotter extends JFrame 
 {
     //Interface Methods
-    public DiscretePlotter()
+    public DiscretePlotter(FFTPlotter plotter)
     {
+        mPlotter = plotter;
+        
         mData = new LinkedList<>();
+        
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        this.setPreferredSize(new Dimension(1000, 600));
+        
+        JPanel buttonsPanel = new JPanel();
+        
+        mNextButton = new JButton("Show Next");
+        mNextButton.addActionListener(new ActionListener(){
+            public void actionPerformed(ActionEvent e){
+                showPlot();
+            }
+        });
+        buttonsPanel.add(mNextButton);
+        
+        getContentPane().add(buttonsPanel, BorderLayout.SOUTH);
+        
+        this.add(new PlotRenderer());
+        
+        pack();
     }
     
     public void addDiscrete(Double data)
@@ -46,59 +72,67 @@ public class DiscretePlotter extends JComponent
         return mData.size();
     }
     
-    
-    @Override
-    protected void paintComponent(Graphics g)
+    private class PlotRenderer extends JComponent
     {
-        super.paintComponent(g);
-        
-        Point offset = new Point(50, 300);
-        Point pointStep = new Point(900 / mData.size(), 500);
-        
-        
-        Point previous = new Point();
-        Point current = new Point();
-        
-        int count = 0;
-        for (Double data : mData)
+        @Override
+        protected void paintComponent(Graphics g)
         {
-            if (count == 0)
+            super.paintComponent(g);
+            
+            Point offset = new Point(50, 300);
+            Point2D.Float pointStep = new Point2D.Float((float) 900 / mData.size(), 50);
+
+
+            Point previous = new Point();
+            Point current = new Point();
+
+            int count = 0;
+            for (Double data : mData)
             {
-                previous.x = offset.x + count * pointStep.x;
-                previous.y = offset.y + (int) (data * pointStep.y);
-                
+                if (count == 0)
+                {
+                    previous.x = offset.x + (int) (count * pointStep.x);
+                    previous.y = offset.y + (int) (data * pointStep.y);
+
+                    count++;
+
+                    continue;
+                }
+
+                current.x = offset.x + (int) (count * pointStep.x);
+                current.y = offset.y + (int) (data * pointStep.y);
+
+                g.setColor(Color.BLUE);
+                g.drawLine(previous.x, previous.y, current.x, current.y);
+
+                previous.setLocation(current);
                 count++;
-                
-                continue;
             }
-            
-            current.x = offset.x + count * pointStep.x;
-            current.y = offset.y + (int) (data * pointStep.y);
-            
-            g.setColor(Color.BLUE);
-            g.drawLine(previous.x, previous.y, current.x, current.y);
-            
-            previous.setLocation(current);
-            count++;
-        }
+        } 
     }
     
     public void showPlot()
     {
-        JFrame testFrame = new JFrame();
-        testFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        this.setPreferredSize(new Dimension(1000, 600));
-        testFrame.getContentPane().add(this, BorderLayout.CENTER);
-        JPanel buttonsPanel = new JPanel();
-        testFrame.getContentPane().add(buttonsPanel, BorderLayout.SOUTH);
-        testFrame.pack();
-        testFrame.setVisible(true);
+        setVisible(true);
         
-        repaint();
+        mData.clear();
+        double[] readCount = mPlotter.getFFTData();
+        
+        if (readCount != null)
+        {
+            addDiscrete(readCount);
+            repaint();
+        }
+        else
+            mNextButton.setEnabled(false);
     }
     
     //Private Methods
     
     //Private Members
-    LinkedList<Double> mData;
+    private LinkedList<Double> mData;
+    
+    private FFTPlotter mPlotter;
+    
+    private JButton mNextButton;
 }

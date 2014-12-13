@@ -14,33 +14,69 @@ import javax.sound.sampled.UnsupportedAudioFileException;
  */
 public class FFTPlotter
 {
-   
-    public static final int WINDOW_SIZE = 128;
+    public  File file;
+    public  WavFile audio;
+        
+    //Create head window and iterator
+    private  FFTWindow head;
+    private  FFTWindow previous;
+    
+    private  int readCount;
+    
+    private  double[][] rawSignal;
+    private double[] magFFT;
+    
+    //Constants
+    public static final int WINDOW_SIZE = 512;
     public static final int FFT_STEP = WINDOW_SIZE / 4;
-    /**
-     * @param args the command line arguments
-     * @throws java.io.IOException
-     */
-    public static void main(String[] args) throws IOException, WavFileException
+    
+    public double[] getFFTData()
     {
-        File file = new File("test.wav");
-        WavFile audio = WavFile.openWavFile(file);
+        try
+        {
+            if (!hasStarted)
+            {
+                initialize(file);
+
+                hasStarted = true;
+            }
+            else
+                loadNextFFT();
+            
+            if (rawSignal == null)
+                return null;
+            
+            FFT fft = new FFT();
+            magFFT = fft.getMagFFT(rawSignal[0]);
+            return magFFT;
+        }
+        catch (WavFileException | IOException e)
+        {
+            return null;
+        }
+    }
+    
+    public void initialize(File audioFile) throws WavFileException, IOException
+    {
+        file = audioFile;
+        audio = WavFile.openWavFile(file);
         
         //Create head window and iterator
-        FFTWindow head = new FFTWindow();
-        FFTWindow previous = null;
+        head = new FFTWindow();
+        previous = null;
         
-        //Get individual windows
-        int readCount = 0;
-        int lastIndex = 0;
-        double[][] rawSignal = new double[audio.getNumChannels()][WINDOW_SIZE];
+        rawSignal = new double[audio.getNumChannels()][WINDOW_SIZE];
         for (int i = 0; i < rawSignal.length; i++)
             Arrays.fill(rawSignal[i], 0);
         
         //Assume we have at least one window size of data available ~1/80 of a sec
-        readCount = audio.readFrames(rawSignal, lastIndex, WINDOW_SIZE);
-        
-        while (readCount > 0)
+        readCount = audio.readFrames(rawSignal, 0, WINDOW_SIZE);
+    }
+    
+    //Returns how many samples were read
+    public void loadNextFFT() throws WavFileException, IOException
+    {
+        if (readCount != 0)
         {
             //Iterate the iterator
             if (previous == null) //Is this the first window
@@ -62,20 +98,22 @@ public class FFTPlotter
                     rawSignal[j][i - FFT_STEP] = rawSignal[j][i];
                 
             readCount = audio.readFrames(rawSignal, WINDOW_SIZE - FFT_STEP, FFT_STEP);
-            
-            
-            lastIndex += FFT_STEP;
-            
-            if (lastIndex >= 10000)
-            {
-                //Test code
-                DiscretePlotter plot = new DiscretePlotter();
-                plot.addDiscrete(rawSignal[1]);
-                plot.showPlot();
-
-                break;
-            }
         }
+        else
+            rawSignal = null;
+    }
+    
+    private static boolean hasStarted = false;
+    /**
+     * @param args the command line arguments
+     * @throws java.io.IOException
+     */
+    public static void main(String[] args) throws IOException, WavFileException
+    {
+        FFTPlotter temp = new FFTPlotter();
+        temp.file = new File("test.wav");
+        DiscretePlotter plot = new DiscretePlotter(temp);
+        plot.showPlot();
     }
     
 }
