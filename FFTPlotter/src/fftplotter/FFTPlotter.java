@@ -56,6 +56,32 @@ public class FFTPlotter
         }
     }
     
+    public double[] getSignalData()
+    {
+        try
+        {
+            if (!hasStarted)
+            {
+                initialize(file);
+
+                hasStarted = true;
+            }
+            else
+                loadNextFFT();
+            
+            if (rawSignal == null)
+                return null;
+            
+            FFT fft = new FFT();
+            magFFT = fft.getMagFFT(rawSignal[0]);
+            return rawSignal[0];
+        }
+        catch (WavFileException | IOException e)
+        {
+            return null;
+        }
+    }
+    
     public void initialize(File audioFile) throws WavFileException, IOException
     {
         file = audioFile;

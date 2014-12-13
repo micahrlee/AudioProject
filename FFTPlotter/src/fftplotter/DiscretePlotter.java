@@ -25,7 +25,7 @@ import java.awt.event.ActionListener;
 public class DiscretePlotter extends JFrame 
 {
     //Interface Methods
-    public DiscretePlotter(FFTPlotter plotter)
+    public DiscretePlotter(FFTPlotter plotter, boolean isFFT)
     {
         mPlotter = plotter;
         
@@ -115,8 +115,13 @@ public class DiscretePlotter extends JFrame
     {
         setVisible(true);
         
+        double[] data = null;
+        
         mData.clear();
-        double[] readCount = mPlotter.getFFTData();
+        if (mIsFFT)
+            data = mPlotter.getFFTData();
+        else
+            data = mPlotter.getSignalData();
         
         if (readCount != null)
         {
