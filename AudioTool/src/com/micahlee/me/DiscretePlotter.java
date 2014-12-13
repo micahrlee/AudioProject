@@ -36,7 +36,7 @@ public class DiscretePlotter extends JFrame
 	private static final long serialVersionUID = 1L;
 	public JLabel begTime;
 	public JLabel endTime;
-	private DecimalFormat df = new DecimalFormat("#.0000");
+	private DecimalFormat df = new DecimalFormat("0.0000");
 	private int count;
 
 	//Interface Methods
@@ -55,9 +55,9 @@ public class DiscretePlotter extends JFrame
         count = 0;
         mNextButton = new JButton("Show Next");
         mNextButton.addActionListener(new ActionListener(){        	
-        	String beg = df.format(count * (((double) FFTPlotter.FFT_STEP) / 44100));
-        	String end = df.format((FFTPlotter.WINDOW_SIZE / 44100 + count * (((double) FFTPlotter.FFT_STEP) / 44100)));
             public void actionPerformed(ActionEvent e){
+            	String beg = String.format("%.4f", (count * (((double) FFTPlotter.FFT_STEP) / 44100)));
+            	String end = df.format(((double)FFTPlotter.WINDOW_SIZE / 44100 + count * (double)(((double) FFTPlotter.FFT_STEP) / 44100)));
             	begTime.setText(beg + " seconds");
             	endTime.setText(end + " seconds");
                 showPlot();
@@ -65,7 +65,7 @@ public class DiscretePlotter extends JFrame
             }
         });
        
-      //If the user tries to exit the window, a prompt will show to prevent any unwanted activity
+        //If the user tries to exit the window, a prompt will show to prevent any unwanted activity
   		addWindowListener(new WindowAdapter() {
   			public void windowClosing(WindowEvent e) {
   				plotter.hasStarted = false;
@@ -77,8 +77,8 @@ public class DiscretePlotter extends JFrame
         getContentPane().add(buttonsPanel, BorderLayout.SOUTH);
         
         endTime = new JLabel("End Time");
-        String beg = df.format(count * (((double) FFTPlotter.FFT_STEP) / 44100));
-    	String end = df.format((FFTPlotter.WINDOW_SIZE / 44100 + count * (((double) FFTPlotter.FFT_STEP) / 44100)));
+        String beg = String.format("%.4f", (count * (((double) FFTPlotter.FFT_STEP) / 44100)));
+    	String end = df.format(((double)FFTPlotter.WINDOW_SIZE / 44100 + count * (double)(((double) FFTPlotter.FFT_STEP) / 44100)));
         begTime.setText(beg + " seconds");
     	endTime.setText(end + " seconds");
     	count++;
@@ -89,14 +89,14 @@ public class DiscretePlotter extends JFrame
         		.addGroup(gl_buttonsPanel.createSequentialGroup()
         			.addContainerGap()
         			.addGroup(gl_buttonsPanel.createParallelGroup(Alignment.LEADING)
-        				.addComponent(separator, GroupLayout.DEFAULT_SIZE, 1018, Short.MAX_VALUE)
+        				.addComponent(separator, GroupLayout.DEFAULT_SIZE, 1030, Short.MAX_VALUE)
         				.addGroup(gl_buttonsPanel.createSequentialGroup()
         					.addComponent(begTime)
         					.addGap(370)
         					.addComponent(mNextButton, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-        					.addGap(372)
+        					.addGap(359)
         					.addComponent(endTime)
-        					.addGap(51)))
+        					.addGap(64)))
         			.addContainerGap())
         );
         gl_buttonsPanel.setVerticalGroup(
@@ -106,8 +106,8 @@ public class DiscretePlotter extends JFrame
         			.addGap(9)
         			.addGroup(gl_buttonsPanel.createParallelGroup(Alignment.BASELINE)
         				.addComponent(mNextButton)
-        				.addComponent(endTime)
-        				.addComponent(begTime))
+        				.addComponent(begTime)
+        				.addComponent(endTime))
         			.addContainerGap())
         );
         buttonsPanel.setLayout(gl_buttonsPanel);
