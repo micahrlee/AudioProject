@@ -8,18 +8,15 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 
-public class FFT
-{
-    
-
+public class FFT{
     /**
          A class for complex numbers
      */
     private class Complex
     {
        // the real and imaginary parts
-       private double real;    
-       private double im; 
+       public double real;    
+       public double im; 
        
        // imaginary parts below this value will be ignored,
        //   so that the complex number will be assumed
@@ -114,10 +111,27 @@ public class FFT
      // combine the recursively processed pieces into
      //   a list of the n desired values     
      for (int k=0; k <n/2 ; k++){
-       Complex x = new Complex(k*2*Math.PI/n);  
+       Complex x = new Complex(-k*2*Math.PI/n);  
        y.set(k, yEven.get(k).add(x.multiply(yOdd.get(k))));
        y.set(k+n/2, yEven.get(k).subtract(x.multiply(yOdd.get(k))));                           
      }
      return y;                                                         
-   }                                                                                     
+   }
+   
+   public double[] getMagFFT(double[] data){
+     ArrayList<Complex> complexList = new ArrayList<Complex>();
+     for (int i=0; i<data.length; i++)
+       complexList.add(new Complex(data[i],0));
+     
+     ArrayList<Complex> fftList = new ArrayList<Complex>();
+     for (int i=0; i<data.length; i++)
+       fftList.add(new Complex(0,0));
+     
+     fftList = fft(complexList);
+     double[] newDouble = new double[data.length];
+     for(int i = 0; i < data.length; i++){
+       newDouble[i] = fftList.get(i).real;
+     }
+     return newDouble;
+   }
 }
